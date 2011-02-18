@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 #-----------------------------------------------------------------------------
-# Joyspoon.com
-#
-# Permission to use, copy, modify, lease, resell, rent, or distribute this
-# software and its documentation for any purpose whatsoever, without fee,
-# and without a written agreement, is hereby denied.
-#
-#-----------------------------------------------------------------------------
 #
 # This script opens a connection to a database and loops through each table
 # generating a mysqldump and then bzipping and pushing the file to a remote
@@ -15,7 +8,6 @@
 #
 #-----------------------------------------------------------------------------
 #
-# Copyright (c) Panvista Media Corp. (www.panvistamedia.com)
 # Author    Jeff Busby <jeff@jeffbusby.ca>
 #
 #-----------------------------------------------------------------------------
