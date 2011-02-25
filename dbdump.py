@@ -10,15 +10,11 @@
 # Usage:  ./dbdump.py -c /path/to/config.cfg
 #
 #-----------------------------------------------------------------------------
-__author__ = "Jeff Busby (jeff@jeffbusby.ca)" 
-__version__ = "$Revision: 0.2 $" 
-__date__ = "$Date: 11/02/22 15:35 $" 
-
 import sys 
 import optparse
 import cgitb
 import ConfigParser
-from BackupDb import BackupDb
+from DbDump import DbDump
 cgitb.enable(1, 0, 5, 'text')
 
 def main():
@@ -44,8 +40,8 @@ def main():
     
     config = ConfigParser.SafeConfigParser()
     config.read(opts.config)
-    backup = BackupDb(config, opts)
-    backup.run()
+    dumppy = DbDump(config, opts)
+    dumppy.run()
 
 if __name__=='__main__':
     main()

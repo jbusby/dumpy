@@ -11,7 +11,6 @@ import os
 import sys
 import time
 import smtplib
-from ProgressBar import ProgressBar
 from email.mime.text import MIMEText
 
 class DbDump:
@@ -53,17 +52,16 @@ class DbDump:
         Executes neccessary shell commands to dump the database tables to the remote host
         """
         self.__validate()
+
         if self.__opts["verbose"]:
-            print "Config is valid."
+            print self.__getHeader()
             
         tables = self.__getTables()
-        if self.__opts["verbose"]:
-            totalTables = len(tables)
-            print str(totalTables) + " table(s) fetched, beginning dump.\n\n"
-            prog = ProgressBar(0, totalTables, 77, mode='fixed', char='#')
-            
         for i, table in enumerate(tables):
             table = table.rstrip()
+            if self.__opts["verbose"]:
+                sys.stdout.write("Dumping " + table + " ... ")
+                sys.stdout.flush()
                 
             if self.__dumpTable(table)==False:
                 self.__sendEmailNotification()
@@ -71,12 +69,11 @@ class DbDump:
                 sys.exit(2)
             
             if self.__opts["verbose"]:
-                prog.increment_amount()
-                print prog, '\n',
+                sys.stdout.write("[\033[0;32mOK\033[1;m]\n")
                 sys.stdout.flush()
                 
         if self.__opts["verbose"]:
-            print self.__getFeedback()
+            print self.__getSummary()
 
         self.__sendEmailNotification()
 
@@ -125,7 +122,7 @@ class DbDump:
         Sends email notifiction
         """
         if self.__conf["email_on"]:
-            msg = MIMEText(self.__getFeedback())
+            msg = MIMEText(self.__getHeader() + self.__getSummary())
             msg['Subject'] = 'Database Dump Complete for ' + os.uname()[1]
             msg['From'] = self.__conf["email_sender"]
             msg['To'] = self.__conf["email_receiver"]
@@ -134,31 +131,36 @@ class DbDump:
             s.sendmail(msg['From'], msg['To'], msg.as_string())
             s.quit()
 
-    def __getFeedback(self):
+    def __getHeader(self):
+        """
+        If verbose is on then a string is printed to stdout display meta data about the backup 
+        """  
+        header =("\n------------------------------------------------------------------------\n"
+               + "Starting Database backup for " + os.uname()[1] + " on " + time.ctime() + "\n"
+               + "------------------------------------------------------------------------\n"
+               + "Database Host: " + self.__conf["db_host"] + "\n"
+               + "Database Name: " + self.__conf["db_name"] + "\n"
+               + "Backup Host:  " + self.__conf["remote_host"] + "\n"
+               + "Backup Directory:  " + self.__conf["remote_dir"] + "\n"
+               + "------------------------------------------------------------------------\n")
+        return header
+
+    def __getSummary(self):
         """
         Formats a feedback message with regards to the backup, used for email notification and 
         verbose enabled script execution.
         Returns a string
         """  
-        
-        ret="""
-           -------------------------------------------'         
-           Database backup completed for ' + os.uname()[1] + ' on ' + time.ctime()
-           -------------------------------------------') 
-           Database Host: """ + self.__conf["db_host"] + """ 
-           Database Name:  """ + self.__conf["db_name"] + """  
-           Backup Host:  """ + self.__conf["remote_host"] + """ 
-           Backup Directory:  """ + self.__conf["remote_dir"] + """ 
-           --------------------------------------------
-        """
-        
+        summary =("\n------------------------------------------------------------------------\n"
+                + "Completed Database backup for " + os.uname()[1] + " on " + time.ctime() + "\n"
+                + "------------------------------------------------------------------------\n")
         if self.__errors:
-            ret+='Errors occurred during backup:\n\n'
+            summary+='Errors occurred during backup:\n\n'
             for error in self.__errors:
-                ret+=str(error)
-            ret+='\n--------------------------------------------\n\n'
+                summary+=str(error)
+            summary+='\n--------------------------------------------\n\n'
         
         for message in self.__feedback:
-            ret+=message
+            summary+=message
         
-        return ret
+        return summary
