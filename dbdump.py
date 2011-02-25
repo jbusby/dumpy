@@ -10,23 +10,24 @@
 # Usage:  ./dbdump.py -c /path/to/config.cfg
 #
 #-----------------------------------------------------------------------------
-#
-# Author    Jeff Busby <jeff@jeffbusby.ca>
-#
-#-----------------------------------------------------------------------------
+__author__ = "Jeff Busby (jeff@jeffbusby.ca)" 
+__version__ = "$Revision: 0.2 $" 
+__date__ = "$Date: 11/02/22 15:35 $" 
+
 import sys 
 import optparse
-import cgitb; cgitb.enable(1, 0, 5, 'text')
+import cgitb
 import ConfigParser
 from BackupDb import BackupDb
+cgitb.enable(1, 0, 5, 'text')
 
 def main():
     """
-    Parses the config file and setups and runs the BackupDb class
+    Parses the configuration file and setups and runs the BackupDb class
     """
     p = optparse.OptionParser(
         description=' Runs a daily backup routine and pushes the files to the backup server',
-        prog='daily',
+        prog='dbdump',
         version='0.1',
         usage='%prog -c /path/to/config.cfg'
     )
@@ -37,7 +38,6 @@ def main():
     p.add_option('--dryrun', '-n' )
     p.add_option('--email', '-e' )
     (opts, args) = p.parse_args()
-
     if opts.config==None:
         p.error("Missing mandatory config options")
         p.print_help()
@@ -45,9 +45,7 @@ def main():
     config = ConfigParser.SafeConfigParser()
     config.read(opts.config)
     backup = BackupDb(config, opts)
-    backup.validate()
     backup.run()
 
 if __name__=='__main__':
     main()
-
