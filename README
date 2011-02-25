@@ -1,0 +1,36 @@
+Backs up a MySQL database to a remote location.  Saves each table to it's own bzip'd sql dump 
+file for easier access and selective restoring of tables.  Can be run in verbose
+mode to see real-time output of each table being dumped and moved to your remote 
+backup server.  You can enable email notifications which will send confirmation that the
+backups are working correctly, good for running the script via crontab.
+
+1.  Checkout a copy of the repository on your database server.
+    
+    git clone git://github.com/jbusby/Dumppy.git
+    
+2.  Copy config.ini.tpl to config.ini (You can name it anything you want)
+
+3.  Edit and save config.ini. The file is documented as to what goes where.
+
+4.  You'll have to setup password-less login between the database server and the backup
+    server for this script to be effective, otherwise you'll be prompted for a password
+    for each table. 
+    
+    On the database server, if you don't already have a key pair setup for the user that 
+    is going to run the backup script, then you'll need to create create one.    
+    
+    $ ssh-keygen -t rsa -C "admin@localhost"
+    
+    By default the public key will be stored in that user's home directory under .ssh/id_rsa.pub.
+    You need to copy the contents of id_rsa.pub to the .ssh/authorized_keys file for the user
+    account on the backup server that you're saving the backups to.
+    
+5.  Once you've sorted out all the ssh stuff then it's just a matter of running the script
+
+    $ ./dbdump.py -c /path/to/config.ini -v
+    
+I had originally writting this script in BASH but I wanted to get more familiar with python so
+I chose to port it over.  If you have any suggestions on how to improve it, please let me know.
+
+@TODO: Move the database commands into an adapter class so the script can support more than just
+       MySQL
