@@ -1,15 +1,10 @@
 #!/usr/bin/env python
 #-----------------------------------------------------------------------------
-#
 # This script opens a connection to a database and loops through each table
 # generating a mysqldump and then bzipping and pushing the file to a remote
 # backup server.  An optional email is sent when the job is finished.
-#
-#
 #-----------------------------------------------------------------------------
-#
 # Author    Jeff Busby <jeff@jeffbusby.ca>
-#
 #-----------------------------------------------------------------------------
 import subprocess as sub
 import os

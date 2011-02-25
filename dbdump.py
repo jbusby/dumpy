@@ -16,10 +16,9 @@
 #-----------------------------------------------------------------------------
 import sys 
 import optparse
-import cgitb
+import cgitb; cgitb.enable(1, 0, 5, 'text')
 import ConfigParser
 from BackupDb import BackupDb
-cgitb.enable(1, 0, 5, 'text')
 
 def main():
     """
